@@ -63,6 +63,35 @@ See example PDF at [github](./example.pdf) or [download](https://raw.githubuserc
 \end{document}
 ```
 
+## How to Customize
+
+#### Q: I still want to use 1.5 spacing.
+
+Change `\DoubleSpacing` to `\OnehalfSpacing` in `thesis.sty`.
+
+#### Q: I want to change titlepage margin.
+
+Play around with these lengths before `\maketitle`:
+```latex
+\setlength{\titlepagemedskip}{0.15in}
+\setlength{\titlepagebigskip}{0.55in}
+\setlength{\committeeindent}{2em}
+\setlength{\committeetop}{3\titlepagebigskip}
+```
+
+#### Q: I want to customize the TOC style.
+
+This package relies on the `tocloft` package, please google how to customize it or reference the default settings [here](https://github.com/Lodour/wisc-thesis-template/blob/74e0420eedca467042bf500e0c234f3fb8c8b917/thesis.sty#L204-L247).
+
+#### Q: I want to change depth of section numbers or TOC.
+
+```latex
+% Set the depth of section numbers you like
+\setcounter{secnumdepth}{2}
+
+% Set the depth of table of contents you like
+\setcounter{tocdepth}{1}
+```
 
 ## What's Not Working with Previous Templates
 
