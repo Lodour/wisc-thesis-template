@@ -1,0 +1,363 @@
+%=============================================================================
+% The dissertation should have double-spacing main text
+%=============================================================================
+% Notes:
+%   - Use `\DoubleSpacing` because the `memoir` class ignores `setspace`
+%   - See https://tex.stackexchange.com/questions/651036/
+%=============================================================================
+
+\DoubleSpacing
+
+
+%=============================================================================
+% Make the font and style better
+%=============================================================================
+% Notes:
+%   - https://texblog.net/latex-archive/latex-general/pdflatex-microtype/
+%=============================================================================
+
+% Avoid bad boxes (only if you are using a large margin)
+%\RequirePackage[protrusion=true,expansion=true]{microtype}
+
+% Avoid ugly "Type 3" fonts
+\usepackage[LY1]{fontenc}
+
+
+%=============================================================================
+% Headers and Page Numbers
+%=============================================================================
+% Notes:
+%   - It is required to NOT use page headers (except for page numbers)
+%   - It is required that page numbers must be in the upper right-hand corner
+%=============================================================================
+
+% Removes all marks in the header defined by the `memoir` class
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+\renewcommand{\bibmark}{}
+\renewcommand{\tocmark}{}
+\renewcommand{\lofmark}{}
+\renewcommand{\lotmark}{}
+
+% Move page number to top-right in memoir
+% See https://tex.stackexchange.com/questions/178792/
+\copypagestyle{chapter}{plain}
+\makeoddfoot{chapter}{}{}{}
+\makeevenfoot{chapter}{}{}{}
+\makeoddhead{chapter}{}{}{\thepage}   %  Odd: top-right
+\makeevenhead{chapter}{\thepage}{}{}  % Even: top-left
+
+
+%=============================================================================
+% Title Page (User Settings)
+%=============================================================================
+% Notes:
+%   - Here creates the commands that let users specify their information
+%   - The settings will be stored in macro variables
+%=============================================================================
+
+% These commands store user settings to be used later
+\makeatletter
+\newcommand\department[1]{\gdef\@department{#1}}
+\newcommand\doctype[1]{\gdef\@doctype{#1}}
+\newcommand\degree[1]{\gdef\@degree{#1}}
+\newcommand\deposityear[1]{\gdef\@deposityear{#1}}
+\newcommand\defensedate[1]{\gdef\@defensedate{#1}}
+\newcommand{\@committee}{}
+\newcommand{\committeemember}[1]{
+  \g@addto@macro\@committee{\item[] #1}%
+}
+\makeatother
+
+% Helper macro to check if a variable is defined
+\newcommand{\checkdefined}[2]{
+  \ifdef{#1}{}{
+    \PackageError{thesis}%
+    {Variable \string#2\space not defined.}
+    {You must define \string#1 using \string#2{value} before \string\begin{document}.}
+  }
+}
+
+% Check if variables are defined
+\makeatletter
+\AtBeginDocument{
+  \checkdefined{\@department}{\department}
+  \checkdefined{\@doctype}{\doctype}
+  \checkdefined{\@deposityear}{\deposityear}
+  \checkdefined{\@defensedate}{\defensedate}
+}
+\makeatother
+
+% Provide common default values
+\doctype{A dissertation}
+\degree{Doctor of Philosophy}
+
+
+%=============================================================================
+% Title Page (Layout)
+%=============================================================================
+% Notes:
+%   - It is required to use a minimum of 1″ margin on all four sides
+%   - Otherwise, there is no strict format requirements
+%=============================================================================
+
+% Use one-half spacing only for the title page to gain some space
+\newenvironment{titlepage}{%
+  \newpage
+  \thispagestyle{empty}
+  \OnehalfSpacing
+}{
+  \DoubleSpacing
+}
+
+% Define margin variables
+\newlength{\titlepagemedskip}
+\setlength{\titlepagemedskip}{0.15in}
+\newlength{\titlepagebigskip}
+\setlength{\titlepagebigskip}{0.55in}
+\newlength{\committeeindent}
+\setlength{\committeeindent}{2em}
+\newlength{\committeetop}
+\setlength{\committeetop}{3\titlepagebigskip}
+
+% Define the committee member layout
+% We print the committee member list using `enumerate` to better control the margin
+\RequirePackage{enumitem}
+\makeatletter
+\newcommand{\printcommittee}{
+\if\relax\detokenize\expandafter{\@committee}\relax
+  \PackageError{thesis}%
+  {No committee members defined. Please use \protect\committeemember\space to add members}
+  {The \protect\printcommittee\space command requires at least one \protect\committeemember\space to be defined}
+\else
+  \begin{enumerate}[noitemsep,topsep=0pt,leftmargin=\committeeindent]
+    \@committee
+  \end{enumerate}
+\fi
+}
+\makeatother
+
+% Define the final title page layout
+\RequirePackage{geometry}
+\makeatletter
+\renewcommand{\maketitle}{%
+% Use 1-in margin only for the titlepage to gain more space
+\newgeometry{left=1in,right=1in,bottom=1in,top=1in}
+% Use `titlepage` environment
+\begin{titlepage}
+  \begin{center}
+    \textbf{\expandafter\expandafter{\@title}}      \\[\titlepagebigskip]
+    by                                              \\[\titlepagemedskip]
+    \@author                                        \\[\titlepagebigskip]
+    \@doctype{} submitted in partial fulfillment of \\
+    the requirements for the degree of              \\[\titlepagebigskip]
+    \@degree                                        \\[\titlepagemedskip]
+    (\@department)                                  \\[\titlepagebigskip]
+    at the                                          \\[\titlepagemedskip]
+    UNIVERSITY OF WISCONSIN--MADISON                \\[\titlepagemedskip]
+    \@deposityear                                   \\[\committeetop]
+  \end{center}
+  Date of final oral examination: \@defensedate     \\[\titlepagemedskip]
+  The dissertation is approved by the following members of the Final Oral Committee:
+  \printcommittee
+\end{titlepage}
+% Recover normal page layout
+\restoregeometry
+% The titlepage is always the first page
+\setcounter{page}{1}
+}
+\makeatother
+
+
+%=============================================================================
+% Table of Contents
+%=============================================================================
+% Notes:
+%   - The `memior` class uses the `tocloft` package to customize TOC styles
+%=============================================================================
+
+\RequirePackage{tocloft}
+
+% Table of Contents (toc)
+\newcounter{tocpage}
+\renewcommand{\printtoctitle}[1]{\chapter*{#1}}
+\renewcommand{\tocheadstart}{}
+\renewcommand{\aftertoctitle}{}
+
+% --- Chapter level font
+\renewcommand{\cftchapterfont}{\bfseries}
+\renewcommand{\cftchapterpagefont}{\bfseries}
+\renewcommand{\cftchapterpresnum}{\bfseries}
+\renewcommand{\cftchapterleader}{\hfill}
+\renewcommand{\cftchapterafterpnum}{}
+
+% --- Section level font
+\renewcommand{\cftsectionfont}{\normalfont}
+\renewcommand{\cftsectionleader}{\cftdotfill{\cftfiguredotsep}}
+\renewcommand{\cftsectionafterpnum}{}
+
+% --- Subsection level font
+\renewcommand{\cftsubsectionfont}{\normalfont}
+\renewcommand{\cftsubsectionleader}{\hfill}
+\renewcommand{\cftsubsectionafterpnum}{}
+
+% List of Figures (lof)
+\newcounter{lofpage}
+\renewcommand{\printloftitle}[1]{\chapter*{#1}}
+\renewcommand{\lofheadstart}{}
+\renewcommand{\afterloftitle}{}
+
+% --- Figure level font
+\renewcommand{\cftfigurefont}{\normalfont}
+\renewcommand{\cftfigureleader}{\cftdotfill{\cftfiguredotsep}}
+\renewcommand{\cftfigureafterpnum}{}
+
+% List of Tables (lot)
+\newcounter{lotpage}
+\renewcommand{\printlottitle}[1]{\chapter*{#1}}
+\renewcommand{\lotheadstart}{}
+\renewcommand{\afterlottitle}{}
+
+% --- Table level font
+\renewcommand{\cfttablefont}{\normalfont}
+\renewcommand{\cfttableleader}{\cftdotfill{\cftfiguredotsep}}
+\renewcommand{\cfttableafterpnum}{}
+
+
+%=============================================================================
+% Copyright Page
+%=============================================================================
+% Notes:
+%   - Start a new page with no page number
+%   - Place the copyright text centered at the bottom
+%=============================================================================
+
+\makeatletter
+\newcommand\copyrightpage{
+  \newpage
+  \thispagestyle{empty}
+  \addtocounter{page}{-1}
+  \null\vfill
+  \begin{center}
+    \copyright\ Copyright by \@author\ \@deposityear \\
+    All Rights Reserved
+  \end{center}
+  \clearpage
+}
+\makeatother
+
+
+%=============================================================================
+% Dedication
+%=============================================================================
+% Notes:
+%   - Start a new page
+%   - Place the dedication text at the center of the page
+%=============================================================================
+
+\makeatletter
+
+% This command stores the dedication
+\newcommand\dedication[1]{\gdef\@dedication{#1}}
+
+% This command prints out the dedication page
+\newcommand\printdedication{
+\ifdef{\@dedication}{
+  \newpage
+  \null\vfill
+  \begin{center}
+    \textit{\@dedication}
+  \end{center}
+  \null\vfill
+  \clearpage
+}{}
+}
+\makeatother
+
+
+%=============================================================================
+% Acknowledgements
+%=============================================================================
+% Notes:
+%   - Start a new page with no page number
+%   - Otherwise, following the normal chapter layout
+%=============================================================================
+
+\makeatletter
+% This command stores the acknowledgements
+\newcommand\acknowledgements[1]{\gdef\@acknowledgements{#1}}
+
+% This command prints out the acknowledgements page
+\newcommand\printacknowledgements{
+\ifdef{\@acknowledgements}{
+  \chapter*{Acknowledgements}
+  \@acknowledgements
+}{}
+}
+\makeatother
+
+
+%=============================================================================
+% Abstract
+%=============================================================================
+% Notes:
+%   - Start a chapter for abstract with no chapter number
+%   - Add the abstract to table of contents
+%=============================================================================
+
+\makeatletter
+
+% This command stores the abstract
+\renewcommand\abstract[1]{\gdef\@abstract{#1}}
+
+% This command prints out the abstract page
+\newcommand\printabstract{
+\ifdef{\@abstract}{
+  \chapter*{Abstract}
+  \addcontentsline{toc}{chapter}{Abstract}
+  \@abstract
+}{}
+}
+\makeatother
+
+
+%=============================================================================
+% Frontmatter
+%=============================================================================
+% Notes:
+%   - Roman page numbers
+%=============================================================================
+
+\newcommand\makefrontmatter{
+% Convert to roman page number
+\pagenumbering{roman}
+
+% Copyright page
+\copyrightpage
+
+% Dedication
+\printdedication
+
+% Acknowledgements
+\printacknowledgements
+\clearpage
+
+% Table of Contents
+\tableofcontents
+\clearpage
+
+% List of Tables
+\listoftables
+\clearpage
+
+% List of Figures
+\listoffigures
+\clearpage
+
+% Abstract
+\printabstract
+\clearpage
+
+% Convert back to arabic page number
+\pagenumbering{arabic}
+}

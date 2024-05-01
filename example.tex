@@ -1,0 +1,66 @@
+\documentclass[12pt,oneside,letterpaper]{memoir}
+
+% Use this package
+\usepackage{thesis}
+
+% You can use any fonts, there is no formatting restriction.
+\usepackage{lmodern}
+\usepackage{tgpagella}
+
+% Make cross references clickable, enable `hidelinks` to remove boxes
+\usepackage[hidelinks]{hyperref}
+
+% Set natbib style, you can use any packages you like
+\usepackage{natbib}
+\setcitestyle{sort,compress,numbers,square,comma}
+
+% These packages are for the sample document only
+\usepackage{graphicx}
+\usepackage{lipsum}
+\usepackage{booktabs}
+
+
+% Define thesis information
+\title{A Minimum Working Example of the Dissertation Template for UW-Madison}
+\author{Student Name}
+\department{Computer Sciences}
+\deposityear{YYYY}
+\defensedate{MM/DD/YYYY}
+
+% Define committee members, you can add more.
+\committeemember{Faculty Name, Professor, Computer Sciences}
+\committeemember{Faculty Name, Professor, Computer Sciences}
+\committeemember{Faculty Name, Associate Professor, Computer Sciences}
+\committeemember{Faculty Name, Assistant Professor, Computer Sciences}
+
+% Define frontmatters (comment out if you don't want it)
+\dedication{\lipsum[1][1]}
+\acknowledgements{\lipsum[1]}
+\abstract{\lipsum[2]}
+
+% Set the depth of section numbers you like
+\setcounter{secnumdepth}{2}
+
+% Set the depth of table of contents you like
+\setcounter{tocdepth}{1}
+
+
+
+
+\begin{document}
+
+% Generate title and preliminary pages
+\maketitle
+\makefrontmatter
+
+% Example doc
+\input{example_contents.tex} 
+
+% The reference can use 1.5 spacing
+\OnehalfSpacing
+
+% Use any bib style you like
+\bibliographystyle{abbrvnat}
+\bibliography{example.bib}
+
+\end{document}
