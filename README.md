@@ -69,7 +69,7 @@ See example PDF at [github](./example.pdf) or [download](https://raw.githubuserc
 
 Change `\DoubleSpacing` to `\OnehalfSpacing` in `thesis.sty`.
 
-#### Q: I want to change titlepage margin.
+#### Q: I want to change the title page margin.
 
 Play around with these lengths before `\maketitle`:
 ```latex
@@ -83,7 +83,7 @@ Play around with these lengths before `\maketitle`:
 
 This package relies on the `tocloft` package, please google how to customize it or reference the default settings [here](https://github.com/Lodour/wisc-thesis-template/blob/74e0420eedca467042bf500e0c234f3fb8c8b917/thesis.sty#L204-L247).
 
-#### Q: I want to change depth of section numbers or TOC.
+#### Q: I want to change the depth of section numbers or TOC.
 
 ```latex
 % Set the depth of section numbers you like
@@ -91,6 +91,14 @@ This package relies on the `tocloft` package, please google how to customize it 
 
 % Set the depth of table of contents you like
 \setcounter{tocdepth}{1}
+```
+
+#### Q: I am not writing a dissertation for a Ph.D.
+
+Change the text to whatever you want before `\maketitle`:
+```latex
+\doctype{A dissertation}
+\degree{Doctor of Philosophy}
 ```
 
 ## What's Not Working with Previous Templates
